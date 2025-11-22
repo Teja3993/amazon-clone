@@ -1,4 +1,4 @@
-import axios from 'axios'; // We need to install axios or use fetch. Let's use axios for cleaner code, or stick to fetch.
+ // We need to install axios or use fetch. Let's use axios for cleaner code, or stick to fetch.
 // To avoid installing new packages right now, let's stick to fetch since we used it everywhere else.
 
 export const addToCart = (id, qty) => async (dispatch, getState) => {
