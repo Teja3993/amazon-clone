@@ -1,10 +1,9 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
-import { Routes, Route } from 'react-router-dom'; // <--- NEW IMPORTS
+import { Routes, Route } from 'react-router-dom';
 import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen';
-// We will create ProductScreen in the next subtask, but we can define the route now
-// For now, we won't import it to avoid errors.
+import ProductScreen from './screens/ProductScreen'; // <--- Import New Screen
 
 function App() {
   return (
@@ -14,7 +13,7 @@ function App() {
           <Routes>
             <Route path='/' element={<HomeScreen />} />
             <Route path='/profile' element={<ProfileScreen />} />
-            {/* We will add the Product route in the next step */}
+            <Route path='/product/:id' element={<ProductScreen />} /> {/* <--- Add Route */}
           </Routes>
         </Container>
       </main>
