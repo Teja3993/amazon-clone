@@ -1,12 +1,12 @@
 import React from 'react';
-import LoginScreen from './screens/LoginScreen';
-// import RegisterScreen from './screens/RegisterScreen'; // We hide this for now
+// import LoginScreen from './screens/LoginScreen';
+import ProfileScreen from './screens/ProfileScreen';
 
 function App() {
   return (
     <div className="App">
-      {/* We are testing Login now, so show LoginScreen */}
-      <LoginScreen />
+      {/* Test Profile Screen */}
+      <ProfileScreen />
     </div>
   );
 }
