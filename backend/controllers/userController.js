@@ -78,5 +78,43 @@ const getUserProfile = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 });
+// @desc    Update user profile
+// @route   PUT /api/users/profile
+// @access  Private
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
 
-module.exports = { registerUser, authUser, getUserProfile };
+  if (user) {
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    
+    // Only update password if sent
+    if (req.body.password) {
+      user.password = req.body.password; // Will be hashed automatically by model
+    }
+    
+    // Update Address
+    user.shippingAddress = {
+      address: req.body.address || user.shippingAddress?.address,
+      city: req.body.city || user.shippingAddress?.city,
+      postalCode: req.body.postalCode || user.shippingAddress?.postalCode,
+      country: req.body.country || user.shippingAddress?.country,
+    };
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      isAdmin: updatedUser.isAdmin,
+      shippingAddress: updatedUser.shippingAddress,
+      token: generateToken(updatedUser._id),
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+module.exports = { registerUser, authUser, getUserProfile, updateUserProfile };
