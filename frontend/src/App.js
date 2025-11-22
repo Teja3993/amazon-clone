@@ -1,12 +1,16 @@
 import React from 'react';
-// import LoginScreen from './screens/LoginScreen';
-import ProfileScreen from './screens/ProfileScreen';
+import { Container } from 'react-bootstrap';
+import HomeScreen from './screens/HomeScreen';
+// import ProfileScreen from './screens/ProfileScreen'; // Comment out Profile for now
 
 function App() {
   return (
     <div className="App">
-      {/* Test Profile Screen */}
-      <ProfileScreen />
+      <main className='py-3'>
+        <Container>
+          <HomeScreen />
+        </Container>
+      </main>
     </div>
   );
 }
