@@ -1,10 +1,12 @@
 import React from 'react';
-import RegisterScreen from './screens/RegisterScreen';
+import LoginScreen from './screens/LoginScreen';
+// import RegisterScreen from './screens/RegisterScreen'; // We hide this for now
 
 function App() {
   return (
     <div className="App">
-      <RegisterScreen />
+      {/* We are testing Login now, so show LoginScreen */}
+      <LoginScreen />
     </div>
   );
 }
