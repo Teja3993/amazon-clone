@@ -10,8 +10,11 @@ const Product = require('../models/productModel');
 // @desc    Fetch all products
 // @route   GET /api/products
 // @access  Public
+// @desc    Fetch all products
+// @route   GET /api/products
+// @access  Public
 const getProducts = asyncHandler(async (req, res) => {
-  // 1. Keyword Search (by Name)
+  // 1. Filter by Name (Keyword)
   const keyword = req.query.keyword
     ? {
         name: {
@@ -21,7 +24,7 @@ const getProducts = asyncHandler(async (req, res) => {
       }
     : {};
 
-  // 2. Category Filter (by Category) - NEW
+  // 2. Filter by Category
   const category = req.query.category
     ? {
         category: {
@@ -31,8 +34,18 @@ const getProducts = asyncHandler(async (req, res) => {
       }
     : {};
 
-  // 3. Find with both filters applied
-  const products = await Product.find({ ...keyword, ...category });
+  // 3. Filter by Brand (NEW)
+  const brand = req.query.brand
+    ? {
+        brand: {
+          $regex: req.query.brand,
+          $options: 'i',
+        },
+      }
+    : {};
+
+  // Find products matching ALL filters
+  const products = await Product.find({ ...keyword, ...category, ...brand });
 
   res.json(products);
 });
