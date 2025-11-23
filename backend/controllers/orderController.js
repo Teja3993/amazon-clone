@@ -1,6 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Order = require('../models/orderModel');
-
+const Product = require('../models/productModel'); // <--- Import Product Model
 // @desc    Create new order
 // @route   POST /api/orders
 // @access  Private
@@ -32,6 +32,18 @@ const addOrderItems = asyncHandler(async (req, res) => {
     });
 
     const createdOrder = await order.save();
+
+    // --- NEW LOGIC START ---
+    // Update stock for each item in the order
+    for (const item of orderItems) {
+      const product = await Product.findById(item.product);
+      
+      if (product) {
+        product.countInStock = product.countInStock - item.qty;
+        await product.save();
+      }
+    }
+    // --- NEW LOGIC END ---
 
     res.status(201).json(createdOrder);
   }
