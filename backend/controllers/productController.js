@@ -7,19 +7,32 @@ const Product = require('../models/productModel');
 // @desc    Fetch all products
 // @route   GET /api/products
 // @access  Public
+// @desc    Fetch all products
+// @route   GET /api/products
+// @access  Public
 const getProducts = asyncHandler(async (req, res) => {
-  // 1. Check if a keyword exists in the query (e.g., ?keyword=iphone)
+  // 1. Keyword Search (by Name)
   const keyword = req.query.keyword
     ? {
         name: {
-          $regex: req.query.keyword, // Use Regex for partial match
-          $options: 'i', // Case insensitive ('iPhone' matches 'iphone')
+          $regex: req.query.keyword,
+          $options: 'i',
         },
       }
     : {};
 
-  // 2. Pass the keyword filter to .find()
-  const products = await Product.find({ ...keyword });
+  // 2. Category Filter (by Category) - NEW
+  const category = req.query.category
+    ? {
+        category: {
+          $regex: req.query.category,
+          $options: 'i',
+        },
+      }
+    : {};
+
+  // 3. Find with both filters applied
+  const products = await Product.find({ ...keyword, ...category });
 
   res.json(products);
 });
