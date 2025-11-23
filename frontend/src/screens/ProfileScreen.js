@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { Form, Button, Row, Col, Table } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { listMyOrders } from '../actions/orderActions';
 
 const ProfileScreen = () => {
+  // --- STATE FOR FORM ---
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,37 +20,58 @@ const ProfileScreen = () => {
   const [message, setMessage] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    if (!userInfo) return;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    // Fetch current data
+  // --- REDUX SELECTORS ---
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+
+  // Get Order History from Redux
+  const orderListMy = useSelector((state) => state.orderListMy);
+  const { loading: loadingOrders, error: errorOrders, orders } = orderListMy;
+
+  // --- USE EFFECT (Load Data) ---
+  useEffect(() => {
+    if (!userInfo) {
+      navigate('/login');
+      return;
+    }
+
+    // 1. Fetch Profile Data to pre-fill the form
     const fetchProfile = async () => {
-      const response = await fetch('/api/users/profile', {
-        headers: { Authorization: `Bearer ${userInfo.token}` },
-      });
-      const data = await response.json();
-      
-      setName(data.name);
-      setEmail(data.email);
-      // Pre-fill address if it exists
-      if (data.shippingAddress) {
-        setAddress(data.shippingAddress.address || '');
-        setCity(data.shippingAddress.city || '');
-        setPostalCode(data.shippingAddress.postalCode || '');
-        setCountry(data.shippingAddress.country || '');
+      try {
+        const response = await fetch('/api/users/profile', {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        const data = await response.json();
+        
+        setName(data.name);
+        setEmail(data.email);
+        if (data.shippingAddress) {
+          setAddress(data.shippingAddress.address || '');
+          setCity(data.shippingAddress.city || '');
+          setPostalCode(data.shippingAddress.postalCode || '');
+          setCountry(data.shippingAddress.country || '');
+        }
+      } catch (err) {
+        console.error(err);
       }
     };
-    fetchProfile();
-  }, []);
 
+    fetchProfile();
+
+    // 2. Fetch Order History
+    dispatch(listMyOrders());
+
+  }, [dispatch, navigate, userInfo]);
+
+  // --- SUBMIT HANDLER (Update Profile) ---
   const submitHandler = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       setMessage('Passwords do not match');
     } else {
-      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-      
       try {
         const response = await fetch('/api/users/profile', {
           method: 'PUT',
@@ -64,7 +90,6 @@ const ProfileScreen = () => {
         if (response.ok) {
           setSuccess(true);
           setMessage('Profile Updated Successfully!');
-          // Update local storage with new info
           localStorage.setItem('userInfo', JSON.stringify(data));
         } else {
           setMessage(data.message);
@@ -76,26 +101,73 @@ const ProfileScreen = () => {
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '500px' }}>
-      <h1>User Profile & Address</h1>
-      {message && <h3 style={{ color: success ? 'green' : 'red' }}>{message}</h3>}
-      
-      <form onSubmit={submitHandler}>
-        <h3>Account Details</h3>
-        <div><label>Name</label><input type="text" value={name} onChange={(e) => setName(e.target.value)} /></div>
-        <div><label>Email</label><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
-        <div><label>New Password</label><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} /></div>
-        <div><label>Confirm Password</label><input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} /></div>
+    <Row>
+      {/* LEFT SIDE: User Profile & Address Form */}
+      <Col md={3}>
+        <h2>User Profile</h2>
+        {message && <h3 style={{ color: success ? 'green' : 'red', fontSize: '1rem' }}>{message}</h3>}
+        
+        <Form onSubmit={submitHandler}>
+          <Form.Group controlId='name'><Form.Label>Name</Form.Label><Form.Control type='text' value={name} onChange={(e) => setName(e.target.value)}></Form.Control></Form.Group>
+          <Form.Group controlId='email'><Form.Label>Email Address</Form.Label><Form.Control type='email' value={email} onChange={(e) => setEmail(e.target.value)}></Form.Control></Form.Group>
+          <Form.Group controlId='password'><Form.Label>New Password</Form.Label><Form.Control type='password' value={password} onChange={(e) => setPassword(e.target.value)}></Form.Control></Form.Group>
+          <Form.Group controlId='confirmPassword'><Form.Label>Confirm Password</Form.Label><Form.Control type='password' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}></Form.Control></Form.Group>
 
-        <h3>Shipping Address</h3>
-        <div><label>Address</label><input type="text" value={address} onChange={(e) => setAddress(e.target.value)} /></div>
-        <div><label>City</label><input type="text" value={city} onChange={(e) => setCity(e.target.value)} /></div>
-        <div><label>Postal Code</label><input type="text" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} /></div>
-        <div><label>Country</label><input type="text" value={country} onChange={(e) => setCountry(e.target.value)} /></div>
+          <h4 style={{marginTop: '20px'}}>Shipping Address</h4>
+          <Form.Group controlId='address'><Form.Label>Address</Form.Label><Form.Control type='text' value={address} onChange={(e) => setAddress(e.target.value)}></Form.Control></Form.Group>
+          <Form.Group controlId='city'><Form.Label>City</Form.Label><Form.Control type='text' value={city} onChange={(e) => setCity(e.target.value)}></Form.Control></Form.Group>
+          <Form.Group controlId='postalCode'><Form.Label>Postal Code</Form.Label><Form.Control type='text' value={postalCode} onChange={(e) => setPostalCode(e.target.value)}></Form.Control></Form.Group>
+          <Form.Group controlId='country'><Form.Label>Country</Form.Label><Form.Control type='text' value={country} onChange={(e) => setCountry(e.target.value)}></Form.Control></Form.Group>
 
-        <button type="submit" style={{ marginTop: '20px' }}>Update Profile</button>
-      </form>
-    </div>
+          <Button type='submit' variant='primary' className='mt-3'>Update Profile</Button>
+        </Form>
+      </Col>
+
+      {/* RIGHT SIDE: My Orders Table */}
+      <Col md={9}>
+        <h2>My Orders</h2>
+        {loadingOrders ? (
+          <p>Loading...</p>
+        ) : errorOrders ? (
+          <p style={{color: 'red'}}>{errorOrders}</p>
+        ) : (
+          <Table striped bordered hover responsive className='table-sm'>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>DATE</th>
+                <th>TOTAL</th>
+                <th>PAID</th>
+                <th>DELIVERED</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders && orders.map((order) => (
+                <tr key={order._id}>
+                  <td>{order._id}</td>
+                  <td>{order.createdAt.substring(0, 10)}</td>
+                  <td>${order.totalPrice}</td>
+                  <td>
+                    {order.isPaid ? (
+                      order.paidAt.substring(0, 10)
+                    ) : (
+                      <i className='fas fa-times' style={{ color: 'red' }}></i>
+                    )}
+                  </td>
+                  <td>
+                    {order.isDelivered ? (
+                      order.deliveredAt.substring(0, 10)
+                    ) : (
+                      <i className='fas fa-times' style={{ color: 'red' }}></i>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
+      </Col>
+    </Row>
   );
 };
 
