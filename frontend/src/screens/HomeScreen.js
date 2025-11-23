@@ -6,22 +6,20 @@ import Product from '../components/Product';
 const HomeScreen = () => {
   const [products, setProducts] = useState([]);
   
-  // Get the query string (e.g., "?keyword=iphone")
+  // FIXED: Only declare location and query once
   const location = useLocation();
-  const keyword = location.search; 
+  const query = location.search; 
 
   useEffect(() => {
     const fetchProducts = async () => {
-      // Append the keyword to the API call
-      // If keyword is empty, it calls '/api/products' (Show All)
-      // If keyword is '?keyword=iphone', it calls '/api/products?keyword=iphone'
-      const res = await fetch(`/api/products${keyword}`);
+      // Pass the whole query string (e.g. ?category=Electronics) to backend
+      const res = await fetch(`/api/products${query}`);
       const data = await res.json();
       setProducts(data);
     };
 
     fetchProducts();
-  }, [keyword]); // <--- Re-run this whenever the URL changes
+  }, [query]);
 
   return (
     <>
@@ -31,11 +29,39 @@ const HomeScreen = () => {
         <Col md={3} className='d-none d-md-block'>
           <h4>Categories</h4>
           <ListGroup variant='flush'>
-            <ListGroup.Item><Link to='/'>All Products</Link></ListGroup.Item>
-            <ListGroup.Item><Link to='/?keyword=Electronics'>Electronics</Link></ListGroup.Item>
-            <ListGroup.Item><Link to='/?keyword=Apple'>Apple Devices</Link></ListGroup.Item>
-            <ListGroup.Item><Link to='/?keyword=Sony'>Sony</Link></ListGroup.Item>
-            <ListGroup.Item><Link to='/?keyword=Cannon'>Cameras</Link></ListGroup.Item>
+            <ListGroup.Item>
+              <Link to='/' style={{ textDecoration: 'none', color: 'black' }}>
+                All Products
+              </Link>
+            </ListGroup.Item>
+            
+            <ListGroup.Item>
+              {/* Shows everything because all our mock items are Electronics */}
+              <Link to='/?category=Electronics' style={{ textDecoration: 'none', color: 'black' }}>
+                Electronics (Category)
+              </Link>
+            </ListGroup.Item>
+            
+            <ListGroup.Item>
+              {/* Uses the new BRAND filter */}
+              <Link to='/?brand=Apple' style={{ textDecoration: 'none', color: 'black' }}>
+                Apple Devices
+              </Link>
+            </ListGroup.Item>
+            
+            <ListGroup.Item>
+              {/* Uses the new BRAND filter */}
+              <Link to='/?brand=Sony' style={{ textDecoration: 'none', color: 'black' }}>
+                Sony
+              </Link>
+            </ListGroup.Item>
+            
+            <ListGroup.Item>
+              {/* Searches for "Camera" in the name */}
+              <Link to='/?keyword=Camera' style={{ textDecoration: 'none', color: 'black' }}>
+                Cameras
+              </Link>
+            </ListGroup.Item>
           </ListGroup>
         </Col>
 
