@@ -11,3 +11,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* FORCE ALL PRODUCT IMAGES TO BE THE SAME SIZE */
+.card-img-top {
+  width: 100%;
+  height: 200px;        /* Fixed height for all cards */
+  object-fit: contain;  /* Ensures the image scales nicely without being cropped or squished */
+  padding: 15px;        /* Adds some breathing room inside the card */
+}
+
+/* Optional: Make the card titles uniform too */
+.card-title {
+  height: 2.5rem;       /* Approx 2 lines of text */
+  overflow: hidden;     /* Hide text if it gets too long */
+  text-overflow: ellipsis; 
+}
