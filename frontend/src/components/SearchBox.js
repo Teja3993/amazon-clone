@@ -15,16 +15,18 @@ const SearchBox = () => {
     }
   };
 
+  // CHANGE: Added 'flex-grow-1' to force it to take middle space
+  // Added 'mx-4' to give it spacing from the Logo and the Links
   return (
-    <Form onSubmit={submitHandler} className='d-flex'>
+    <Form onSubmit={submitHandler} className='d-flex flex-grow-1 mx-4'> 
       <Form.Control
         type='text'
         name='q'
         onChange={(e) => setKeyword(e.target.value)}
         placeholder='Search Products...'
-        className='mr-sm-2 ml-sm-5'
+        className='mr-sm-2'
       ></Form.Control>
-      <Button type='submit' variant='outline-success' className='p-2'>
+      <Button type='submit' variant='outline-warning' className='p-2'>
         Search
       </Button>
     </Form>

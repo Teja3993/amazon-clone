@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux'; // <--- NEW
+import { useDispatch, useSelector } from 'react-redux';
 import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import SearchBox from './SearchBox';
@@ -9,44 +9,41 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Get user info from Redux
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
   const logoutHandler = () => {
-    // 1. Clear ALL local storage items, not just user info
     localStorage.removeItem('userInfo');
-    localStorage.removeItem('cartItems');        // <--- NEW
-    localStorage.removeItem('shippingAddress');  // <--- NEW
-    localStorage.removeItem('paymentMethod');    // <--- NEW
-
-    // 2. Clear Redux
+    localStorage.removeItem('cartItems');
+    localStorage.removeItem('shippingAddress');
+    localStorage.removeItem('paymentMethod');
     dispatch({ type: 'USER_LOGOUT' });
-    
-    // 3. Optional: Reload page to clear any lingering Redux state
-    // navigate('/login'); 
-    // OR cleaner:
-    document.location.href = '/login'; 
+    document.location.href = '/login';
   };
 
+  // Amazon's dark blue hex code: #131921
   return (
     <header>
-      <Navbar bg='dark' variant='dark' expand='lg' collapseOnSelect>
+      <Navbar style={{ backgroundColor: '#131921' }} variant='dark' expand='lg' collapseOnSelect>
         <Container>
           <LinkContainer to='/'>
-            <Navbar.Brand>Amazon Clone</Navbar.Brand>
+            <Navbar.Brand style={{ fontSize: '1.4rem', fontWeight: 'bold', letterSpacing: '1px' }}>
+              AMAZON CLONE
+            </Navbar.Brand>
           </LinkContainer>
+          
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>
             <SearchBox />
-            <Nav className='ml-auto'>
+            
+            {/* CHANGE: 'ms-auto' pushes items to the RIGHT in Bootstrap 5 */}
+            <Nav className='ms-auto'>
               <LinkContainer to='/cart'>
                 <Nav.Link>
                   <i className='fas fa-shopping-cart'></i> Cart
                 </Nav.Link>
               </LinkContainer>
-              
-              {/* CONDITIONAL RENDERING: Show User Name if logged in, else Sign In */}
+
               {userInfo ? (
                 <NavDropdown title={userInfo.name} id='username'>
                   <LinkContainer to='/profile'>
@@ -58,12 +55,16 @@ const Header = () => {
                 </NavDropdown>
               ) : (
                 <>
-                <LinkContainer to='/register'>
-                  <Nav.Link><i className='fas fa-user-plus'></i> Register</Nav.Link>
-                </LinkContainer>
-                <LinkContainer to='/login'>
-                  <Nav.Link><i className='fas fa-user'></i> Sign In</Nav.Link>
-                </LinkContainer>
+                  <LinkContainer to='/register'>
+                    <Nav.Link>
+                      <i className='fas fa-user-plus'></i> Register
+                    </Nav.Link>
+                  </LinkContainer>
+                  <LinkContainer to='/login'>
+                    <Nav.Link>
+                      <i className='fas fa-user'></i> Sign In
+                    </Nav.Link>
+                  </LinkContainer>
                 </>
               )}
             </Nav>
