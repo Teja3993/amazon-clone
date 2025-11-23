@@ -5,7 +5,12 @@ import Header from './components/Header';
 import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ProductScreen from './screens/ProductScreen';
-import CartScreen from './screens/CartScreen'; // <--- NEW
+import CartScreen from './screens/CartScreen';
+import ShippingScreen from './screens/ShippingScreen';
+import PaymentScreen from './screens/PaymentScreen';
+import PlaceOrderScreen from './screens/PlaceOrderScreen';
+import LoginScreen from './screens/LoginScreen';       // <--- WAS MISSING
+import RegisterScreen from './screens/RegisterScreen'; // <--- WAS MISSING
 
 function App() {
   return (
@@ -15,11 +20,15 @@ function App() {
         <Container>
           <Routes>
             <Route path='/' element={<HomeScreen />} />
-            <Route path='/profile' element={<ProfileScreen />} />
             <Route path='/product/:id' element={<ProductScreen />} />
-            {/* The ? means the ID is optional */}
-            <Route path='/cart/:id?' element={<CartScreen />} /> {/* <--- NEW */}
-            <Route path='/cart' element={<CartScreen />} />      {/* <--- NEW */}
+            <Route path='/cart/:id?' element={<CartScreen />} />
+            <Route path='/cart' element={<CartScreen />} />
+            <Route path='/login' element={<LoginScreen />} />       {/* <--- FIXED */}
+            <Route path='/register' element={<RegisterScreen />} /> {/* <--- FIXED */}
+            <Route path='/profile' element={<ProfileScreen />} />
+            <Route path='/shipping' element={<ShippingScreen />} />
+            <Route path='/payment' element={<PaymentScreen />} />
+            <Route path='/placeorder' element={<PlaceOrderScreen />} />
           </Routes>
         </Container>
       </main>
